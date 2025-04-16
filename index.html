@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spelling Bee Game</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9fafb;
+      text-align: center;
+      padding-top: 50px;
+    }
+    button {
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #6366f1;
+      color: white;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    input {
+      font-size: 1.1rem;
+      padding: 10px;
+      margin-top: 15px;
+      width: 300px;
+    }
+    #timer, #result, #score {
+      font-size: 1.1rem;
+      margin-top: 15px;
+    }
+    #score {
+      color: #2563eb;
+    }
+    #result {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Spelling Bee</h1>
+  <div id="score">Score: 0 correct out of 0</div>
+  <button onclick="playWord()">Hear Word</button>
+  <br>
+  <input type="text" id="userInput" placeholder="Type the word here" disabled />
+  <div id="timer">Timer: 0</div>
+  <div id="result"></div>
+
+  <script>
+    const words = [
+    "Abate", "Abdicate", "Aberration", "Abhor", "Abjure", "Abrogate", "Abstemious", "Accolade",
+  "Acquiesce", "Acrimony", "Adamant", "Admonish", "Adroit", "Aesthetic", "Alacrity", "Allegory",
+  "Alleviate", "Ameliorate", "Anachronism", "Anathema", "Antipathy", "Apathy", "Apocryphal",
+  "Arcane", "Arduous", "Ascetic", "Aspersion", "Assiduous", "Atrophy", "Audacious", "Austere",
+  "Avarice", "Axiom",
+
+  "Banal", "Belie", "Belligerent", "Benevolent", "Bombastic", "Bucolic", "Burgeon", "Cacophony",
+  "Capitulate", "Caustic", "Chicanery", "Coerce", "Cogent", "Complacent", "Concise",
+  "Conflagration", "Conundrum", "Copious", "Corpulent", "Craven", "Cryptic", "Cursory", "Debacle",
+  "Debilitate", "Deference", "Deleterious", "Demagogue", "Denigrate", "Deride", "Despot",
+  "Diatribe", "Didactic", "Disparage", "Disparate", "Disseminate", "Dissent", "Dogmatic",
+  "Dubious", "Ebullient", "Eclectic", "Edify", "Egregious", "Elicit", "Elucidate", "Enervate",
+  "Ennui", "Enigma", "Ephemeral", "Equanimity", "Equivocate", "Esoteric", "Ethereal", "Eulogy",
+  "Evanescent", "Exacerbate", "Exculpate", "Exonerate", "Expeditious", "Extol", "Extraneous",
+
+  "Facetious", "Fallacious", "Fastidious", "Fatuous", "Fervor", "Flagrant", "Flippant",
+  "Fortuitous", "Fractious", "Garrulous", "Gregarious", "Guile", "Gullible", "Hackneyed", "Haughty",
+  "Hedonist", "Heresy", "Hiatus", "Iconoclast", "Idiosyncrasy", "Ignominious", "Immutable",
+  "Impassive", "Impecunious", "Impetuous", "Impugn", "Inane", "Inchoate", "Incontrovertible",
+  "Indigent", "Indolent", "Ineffable", "Inexorable", "Ingenuous", "Inimical", "Inscrutable",
+  "Insipid", "Intrepid", "Inure", "Invective", "Irascible", "Irrefutable", "Itinerant", "Jocular",
+  "Juxtapose", "Laconic", "Languid", "Latent", "Laud", "Lethargic", "Loquacious", "Lucid",
+  "Lugubrious", "Lurid",
+
+  "Magnanimous", "Malevolent", "Malfeasance", "Malleable", "Misanthrope", "Mitigate", "Mollify",
+  "Morose", "Mundane", "Myopic", "Nefarious", "Neologism", "Nihilism", "Nonchalant", "Noxious",
+  "Obdurate", "Obfuscate", "Obsequious", "Odious", "Officious", "Onerous", "Opaque", "Opulent",
+  "Ostentatious", "Palliate", "Paragon", "Pariah", "Parsimonious", "Partisan", "Paucity",
+  "Pejorative", "Penchant", "Penitent", "Perfunctory", "Pernicious", "Perspicacious", "Pertinent",
+  "Petulant", "Phlegmatic", "Pithy", "Placate", "Platitude", "Plethora", "Polemic", "Pragmatic",
+  "Precarious", "Precocious", "Predilection", "Prevaricate", "Proclivity", "Prosaic", "Provincial",
+  "Prudent", "Pugnacious", "Quell", "Querulous", "Quixotic", "Rancor", "Recalcitrant", "Redundant",
+  "Relegate", "Remonstrate", "Reprehensible", "Reprove", "Rescind", "Reticent", "Ribald", "Ruminate",
+
+  "Sagacious", "Salient", "Sanctimonious", "Sanguine", "Sardonic", "Scurrilous", "Serendipity",
+  "Servile", "Spurious", "Stagnant", "Stoic", "Strident", "Stymie", "Subjugate", "Supercilious",
+  "Superfluous", "Surreptitious", "Sycophant", "Taciturn", "Tantamount", "Temerity", "Tenacious",
+  "Tenuous", "Timorous", "Tirade", "Torpid", "Tractable", "Trepidation", "Trite", "Ubiquitous",
+  "Vacillate", "Vapid", "Vehement", "Veracity", "Verbose", "Vex", "Vindicate", "Virulent",
+  "Viscous", "Vitriolic", "Vociferous", "Volatile", "Wary", "Zealot"
+    ];
+
+    let currentWord = '';
+    let timer;
+    let timeLimit = 10;
+    let total = 0;
+    let correct = 0;
+
+    function playWord() {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+
+      clearInterval(timer);
+      currentWord = words[Math.floor(Math.random() * words.length)];
+      const utterance = new SpeechSynthesisUtterance(currentWord);
+
+      document.getElementById('userInput').value = '';
+      document.getElementById('userInput').disabled = true;
+      document.getElementById('result').textContent = '';
+      document.getElementById('timer').textContent = `Timer: ...`;
+
+      utterance.onend = () => {
+        document.getElementById('userInput').disabled = false;
+        document.getElementById('userInput').focus();
+
+        let timeLeft = timeLimit;
+        document.getElementById('timer').textContent = `Timer: ${timeLeft}`;
+        timer = setInterval(() => {
+          timeLeft--;
+          document.getElementById('timer').textContent = `Timer: ${timeLeft}`;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            checkAnswer();
+          }
+        }, 1000);
+      };
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function checkAnswer() {
+      const userAnswer = document.getElementById('userInput').value.trim().toLowerCase();
+      const isCorrect = userAnswer === currentWord.toLowerCase();
+      total++;
+      if (isCorrect) correct++;
+
+      document.getElementById('result').textContent = isCorrect
+        ? 'Correct!'
+        : `Incorrect. The word was "${currentWord}"`;
+
+      document.getElementById('score').textContent = `Score: ${correct} correct out of ${total} (${Math.round((correct/total)*100)}%)`;
+      document.getElementById('userInput').disabled = true;
+
+      // Auto-play next word after 3 seconds
+      setTimeout(playWord, 3000);
+    }
+
+    document.getElementById('userInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        clearInterval(timer);
+        checkAnswer();
+      }
+    });
+  </script>
+
+</body>
+</html>
